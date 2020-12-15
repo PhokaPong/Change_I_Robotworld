@@ -23,32 +23,36 @@ void polygon(float x, float y, float radius, int npoints) {  // method for make 
 }
 
 void setup() {
-  
+
   readfile();
   size(600, 600);
   world = new World();
   flowchart = new Flowchart();
-  
+  //String[] truecommand = {"turnLeft()", "turnLeft()"};
+  //String[] falsecommand = {"turnRight()", "turnRight()"};
   // add statements in flowchart 
   flowchart.add("move()");
-  flowchart.ifStatement("isBlocked()", "turnLeft()", "turnRight()");
+  flowchart.ifStatement("isBlocked()", "turnRight()", "move()");
   flowchart.add("move()");
   flowchart.render();
-  
+
   int randX = (int)random(world.getMaxX()-1);
   int randY = (int)random(world.getMaxY()-1);
-  
-  while(!world.checkIsWhite(randX, randY) || (randX == 0 && randY == 0)){  // if the result of random is blackblock or (0,0)
-     randX = (int)random(world.getMaxX()-1);     // random the new one
-     randY = (int)random(world.getMaxY()-1);
+
+  while (!world.checkIsWhite(randX, randY) || (randX == 0 && randY == 0)) {  // if the result of random is blackblock or (0,0)
+    randX = (int)random(world.getMaxX()-1);     // random the new one
+    randY = (int)random(world.getMaxY()-1);
   }
-    world.robot= new Robot(0,0,0);
-    world.target = new Target(randX, randY);
-   
-    world.inputProcessor = new InputProcessor();
-  
-    world.getMaxX();
-    world.getMaxY();
+  world.robot= new Robot(0, 0, 0);
+  world.target = new Target(randX, randY);
+
+  world.inputProcessor = new InputProcessor();
+
+  world.getMaxX();
+  world.getMaxY();
+  world.draw();
+  world.robot.draw();
+  world.target.draw();
 }
 
 /////////////////////////////////////////////////////
@@ -58,16 +62,16 @@ void setup() {
 // Description: Read file and spilt "," and close file
 // 
 /////////////////////////////////////////////////////
-  void readfile() { 
+void readfile() { 
   BufferedReader reader = createReader("position.txt");
   String line = null;
   int i = 0;
   try {
     while ((line = reader.readLine()) != null) {
-        String[] pieces = split(line,",");
-        info[i][0] = int(pieces[0]);
-        info[i][1] = int(pieces[1]);
-        i++;
+      String[] pieces = split(line, ",");
+      info[i][0] = int(pieces[0]);
+      info[i][1] = int(pieces[1]);
+      i++;
     }
     reader.close();
   }
@@ -79,7 +83,7 @@ void setup() {
     e.printStackTrace();
     load = false;
   }
-  if(i != 4){
+  if (i != 4) {
     load = false;
   }
 }
@@ -93,21 +97,17 @@ void setup() {
 /////////////////////////////////////////////////////
 
 void draw() {
-  background(0);
-  world.draw();
-  world.robot.draw();
-  world.target.draw();
-  
+
   world.getFlow(flowchart);
-  
+
   if (world.target.met(world.robot.getX(), world.robot.getY()) == true) {
     // when position of the robot is same as the target
     background(250); // color : grey 
     textSize(60);
     text("You Won", 150, 280);
-    noLoop();   
+    noLoop();
   }
-  
+
   //world.getFlow(flowchart);
 }
 
@@ -120,7 +120,7 @@ void draw() {
 /////////////////////////////////////////////////////
 
 void keyPressed() {
-  world.inputProcessor.control();  
+  world.inputProcessor.control();
 }
 
 class World {
@@ -129,6 +129,7 @@ class World {
   Target target;
   InputProcessor inputProcessor;
   String[] Map;
+  Flowchart myFlow;
 
   void draw() {
     int X = width/maxX;
@@ -138,8 +139,7 @@ class World {
       for (int j = 0; j < (maxY ); j = j+1) {
         if (world.getMap(i, j) == true) {
           colour = 250;
-        }
-        else {
+        } else {
           colour = 0;
         }
         fill(colour);
@@ -147,25 +147,25 @@ class World {
       }
     }
   }
-  
-  void saveFile(String name){
-      PrintWriter output;
-      output = createWriter(name);
-      output.println(world.getMaxX() + ","  + world.getMaxY());
-      output.println(world.robot.getX() + "," + world.robot.getY());
-      output.println(world.target.getPosX() + "," + world.target.getPosY());
-      output.println(world.robot.direction + ","+0);
-      output.flush();
-      output.close();    
+
+  void saveFile(String name) {
+    PrintWriter output;
+    output = createWriter(name);
+    output.println(world.getMaxX() + ","  + world.getMaxY());
+    output.println(world.robot.getX() + "," + world.robot.getY());
+    output.println(world.target.getPosX() + "," + world.target.getPosY());
+    output.println(world.robot.direction + ","+0);
+    output.flush();
+    output.close();
   }
-  
+
   /////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: Get number of string in array and return
-// 
-/////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: Get number of string in array and return
+  // 
+  /////////////////////////////////////////////////////
 
   int getMaxX() { 
     // return horizontal block counts
@@ -174,14 +174,14 @@ class World {
     maxX = mapread.length;
     return maxX;
   }
-  
-    /////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description:Get number of string in list that already "," and "-"
-// 
-/////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description:Get number of string in list that already "," and "-"
+  // 
+  /////////////////////////////////////////////////////
 
   int getMaxY() { 
     // return vertical block counts
@@ -191,21 +191,21 @@ class World {
     maxY = block.length;
     return maxY;
   }
-  
-      /////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: Read file and retrun wanted block as boolean  
-// 
-/////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: Read file and retrun wanted block as boolean  
+  // 
+  /////////////////////////////////////////////////////
   boolean getMap(int X, int Y) { 
     Map = loadStrings("Map.txt");
     String[] mapread = split(Map[0], ',');
     String[] block = split(mapread[Y], '-');
     return(boolean(int(block[X])));
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -213,10 +213,10 @@ class World {
   // Description: check the block that color white or not? (the robot can walk pass white block) 
   // 
   /////////////////////////////////////////////////////
-  boolean checkIsWhite(int blockX, int blockY){
+  boolean checkIsWhite(int blockX, int blockY) {
     return world.getMap(blockX, blockY);
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -226,37 +226,48 @@ class World {
   /////////////////////////////////////////////////////
   void getFlow(Flowchart flow)
   {
-    for (int i=0; i < flow.getSize(); i++){
-      if(!(flow.elements == null))
-      {
-        String command = flow.getFlowchart();
+    myFlow = flow;
+    if (frameCount > 50) {
+      //println("1");
+      //flow.render();
+      if (myFlow.elements != null)
+        {
+      for (int i=0; i < myFlow.getSize(); i++) {
         
-        if (command.charAt(0) == '[')
-        {
-          // if...else statement
-          String[] statements = command.substring(1,command.length()-1).split(",");
-          String condition = statements[0];
-          String ifTrue = statements[1];
-          String ifFalse = statements[2];
-          
-          // do if...else statement
-          if(this.executeCommand(condition))
+          String command = myFlow.getFlowchart();
+
+          if (command.charAt(0) == '[')
           {
-            this.executeCommand(ifTrue);
-          }
-          else
+            // if...else statement
+            String[] statements = command.substring(1, command.length()-1).split(",");
+            String condition = statements[0];
+            String ifTrue = statements[1];
+            String ifFalse = statements[2];
+
+            // do if...else statement
+            if (this.executeCommand(condition))
+            {
+              this.executeCommand(ifTrue);
+              
+            } else
+            {
+              this.executeCommand(ifFalse);
+            }
+          } else
           {
-            this.executeCommand(ifFalse);
+            this.executeCommand(command);
           }
+        
+        
+        this.draw();
+        target.draw();
+        robot.draw();
+        delay(800);
         }
-        else
-        {
-          this.executeCommand(command);
-        }
-      }
+      }   
     }
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -266,26 +277,39 @@ class World {
   /////////////////////////////////////////////////////
   boolean executeCommand(String cmd)
   {
-    if(cmd.equals("move()"))
+    if (cmd.equals("move()"))
     {
       world.robot.move();
       return true;
-    }
-    else if(cmd.equals("turnLeft()"))
+    } else if (cmd.equals("turnLeft()"))
     {
       world.robot.turnLeft();
       return true;
-    }
-    else if(cmd.equals("turnRight()"))
+    } else if (cmd.equals("turnRight()"))
     {
       world.robot.turnRight();
       return true;
-    }
-    else if(cmd.equals("isBlocked()"))
+    } else if (cmd.equals("isBlocked()"))
     {
       return world.robot.isBlocked();
     }
     return false;
+  }
+
+  void executeCommand(String[] command)
+  {
+    for (String cmd : command) {
+      if (cmd.equals("move()"))
+      {
+        world.robot.move();
+      } else if (cmd.equals("turnLeft()"))
+      {
+        world.robot.turnLeft();
+      } else if (cmd.equals("turnRight()"))
+      {
+        world.robot.turnRight();
+      }
+    }
   }
 }
 
@@ -295,31 +319,28 @@ class Robot {
   int headPosX, headPosY;
   int leftPosX, leftPosY;
   int rightPosX, rightPosY;
-  
-  Robot(int px,int py,int di) { 
+
+  Robot(int px, int py, int di) { 
     posX = px;
     posY = py;
     direction = di;
   }
-  
-        /////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: draw three line to form triangle using another method
-// 
-/////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: draw three line to form triangle using another method
+  // 
+  /////////////////////////////////////////////////////
   void draw() { 
     if (direction == 0) {
       world.robot.headUp();
-    }
-    else if (direction ==1) {
+    } else if (direction ==1) {
       world.robot.headRight();
-    } 
-    else if (direction ==2) {
+    } else if (direction ==2) {
       world.robot.headDown();
-    } 
-    else if (direction ==3) {
+    } else if (direction ==3) {
       world.robot.headLeft();
     }
 
@@ -331,14 +352,14 @@ class Robot {
     strokeWeight(2);
     stroke(0);
   }
-  
-////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: Change value of treeline coordinate
-// 
-/////////////////////////////////////////////////////
+
+  ////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: Change value of treeline coordinate
+  // 
+  /////////////////////////////////////////////////////
   void headUp() { 
     headPosX = int(width/world.getMaxX()*posX)+width/world.getMaxX()/2;
     headPosY =int(height/world.getMaxY()*posY);
@@ -347,15 +368,15 @@ class Robot {
     rightPosX = int(width/world.getMaxX()*(posX+1)); 
     rightPosY = int(height/world.getMaxY()*(posY+1));
   }
-  
+
   /////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: Change value of treeline coordinate
-// 
-/////////////////////////////////////////////////////
-  
+  //
+  // Programmer: Sikarin
+  //
+  // Description: Change value of treeline coordinate
+  // 
+  /////////////////////////////////////////////////////
+
   void headDown() {
     headPosX = int((width/world.getMaxX()*posX)+width/world.getMaxX()/2);
     headPosY =int(height/world.getMaxY()*(posY+1));
@@ -364,14 +385,14 @@ class Robot {
     rightPosX = int(width/world.getMaxX()*(posX+1)); 
     rightPosY = int (height/world.getMaxY()*posY);
   }
-  
-/////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: Change value of treeline coordinate
-// 
-/////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: Change value of treeline coordinate
+  // 
+  /////////////////////////////////////////////////////
   void headLeft() {
     headPosX = int(width/world.getMaxX()*(posX+1));
     headPosY =int(height/world.getMaxY()*posY+1);
@@ -380,14 +401,14 @@ class Robot {
     rightPosX = int(width/world.getMaxX()*(posX+1)); 
     rightPosY = int (height/world.getMaxY()*(posY+1));
   }
-  
-/////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: Change value of treeline coordinate
-// 
-/////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: Change value of treeline coordinate
+  // 
+  /////////////////////////////////////////////////////
 
   void headRight() {
     headPosX = int(width/world.getMaxX()*posX);
@@ -397,63 +418,57 @@ class Robot {
     rightPosX = int(width/world.getMaxX()*(posX)); 
     rightPosY = int (height/world.getMaxY()*(posY+1));
   }
-  
+
   /////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: Change value of direction
-// 
-/////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: Change value of direction
+  // 
+  /////////////////////////////////////////////////////
   void turnLeft() {
     if (direction == 0) {
       direction = 3;
-    } 
-    else {
+    } else {
       direction -= 1;
     }
   }
-  
+
   /////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: Change value of direction
-// 
-/////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: Change value of direction
+  // 
+  /////////////////////////////////////////////////////
 
   void turnRight() {
     if (direction == 3 ) {
       direction = 0;
-    } 
-    else {
+    } else {
       direction += 1;
     }
   }
-  
-/////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: CChange value of row or column of robot by 1
-// 
-/////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: CChange value of row or column of robot by 1
+  // 
+  /////////////////////////////////////////////////////
   void move() {
     if (direction == 0 && !this.isAtTopEdge() && world.checkIsWhite(posX, posY-1) ) {
       posY -= 1;
-    } 
-    else if (direction ==1 && !this.isAtRightEdge(world.getMaxX()) && world.checkIsWhite(posX+1, posY) ) {
+    } else if (direction ==1 && !this.isAtRightEdge(world.getMaxX()) && world.checkIsWhite(posX+1, posY) ) {
       posX += 1;
-    } 
-    else if (direction ==2 && !this.isAtBottomEdge(world.getMaxY()) && world.checkIsWhite(posX, posY+1)) {
+    } else if (direction ==2 && !this.isAtBottomEdge(world.getMaxY()) && world.checkIsWhite(posX, posY+1)) {
       posY += 1;
-    } 
-    else if (direction ==3 && !this.isAtLeftEdge() && world.checkIsWhite(posX-1, posY) ) {
+    } else if (direction ==3 && !this.isAtLeftEdge() && world.checkIsWhite(posX-1, posY) ) {
       posX-= 1;
     }
-    
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -464,7 +479,7 @@ class Robot {
   int getX() {
     return(posX);
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -475,7 +490,7 @@ class Robot {
   int getY() {
     return(posY);
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -483,10 +498,10 @@ class Robot {
   // Description: check head of robot is at top edge of widget or not?
   // 
   /////////////////////////////////////////////////////
-  boolean isAtTopEdge(){
-      return posY <= 0;
+  boolean isAtTopEdge() {
+    return posY <= 0;
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -494,10 +509,10 @@ class Robot {
   // Description: check head of robot is at bottom edge of widget or not?
   // 
   /////////////////////////////////////////////////////
-  boolean isAtBottomEdge(int worldMaxY){
-      return posY >= worldMaxY-1;
+  boolean isAtBottomEdge(int worldMaxY) {
+    return posY >= worldMaxY-1;
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -505,10 +520,10 @@ class Robot {
   // Description: check head of robot is at left edge of widget or not?
   // 
   /////////////////////////////////////////////////////
-  boolean isAtLeftEdge(){
-      return posX <= 0;
+  boolean isAtLeftEdge() {
+    return posX <= 0;
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -516,10 +531,10 @@ class Robot {
   // Description: check head of robot is at right edge of widget or not?
   // 
   /////////////////////////////////////////////////////
-  boolean isAtRightEdge(int worldMaxX){
+  boolean isAtRightEdge(int worldMaxX) {
     return posX >= worldMaxX-1;
   }
-  
+
   /////////////////////////////////////////////////////
   //
   // Programmer: Supansa Tantulset
@@ -529,23 +544,19 @@ class Robot {
   /////////////////////////////////////////////////////
   boolean isBlocked()
   {
-    if(direction == 0 && (posY <= 0 || !world.checkIsWhite(posX, posY-1)))
+    if (direction == 0 && (posY <= 0 || !world.checkIsWhite(posX, posY-1)))
     {
       return true;
-    }
-    else if (direction == 1 && (posY >= world.getMaxY()-1 || !world.checkIsWhite(posX+1, posY)))
+    } else if (direction == 1 && (posY >= world.getMaxY()-1 || !world.checkIsWhite(posX+1, posY)))
     {
       return true;
-    }
-    else if (direction == 2 && (posX <= 0 || !world.checkIsWhite(posX, posY+1)))
+    } else if (direction == 2 && (posX <= 0 || !world.checkIsWhite(posX, posY+1)))
     {
       return true;
-    }
-    else if (direction == 3 && (posX >= world.getMaxX()-1 || !world.checkIsWhite(posX-1, posY)))
+    } else if (direction == 3 && (posX >= world.getMaxX()-1 || !world.checkIsWhite(posX-1, posY)))
     {
       return true;
-    }
-    else
+    } else
     {
       return false;
     }
@@ -554,38 +565,37 @@ class Robot {
 
 class Target {
   int posX, posY;
-  
+
   Target(int x, int y) {
     posX = x;
     posY = y;
   }
-  
+
   /////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: Ccheck the target met the robot or not by using row and column
-// 
-/////////////////////////////////////////////////////
-  
+  //
+  // Programmer: Sikarin
+  //
+  // Description: Ccheck the target met the robot or not by using row and column
+  // 
+  /////////////////////////////////////////////////////
+
   boolean met(int X, int Y) {  
-    
+
     if (X == posX && Y == posY) {
       // when the robot is on target
       return true;
-    } 
-    else {
+    } else {
       return false;
     }
   }
-  
-/////////////////////////////////////////////////////
-//
-// Programmer: Sikarin
-//
-// Description: find coordinate and draw polygon 
-// 
-/////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////
+  //
+  // Programmer: Sikarin
+  //
+  // Description: find coordinate and draw polygon 
+  // 
+  /////////////////////////////////////////////////////
   void draw() { 
     fill(255, 0, 0);
     float actualPosX = (width/world.getMaxX()*posX)+width/world.getMaxX()/2;
@@ -621,38 +631,38 @@ class Target {
 
 class InputProcessor {
   /////////////////////////////////////////////////////
-//
-// Programmer: Thanakrit-Bank
-//
-// Description: This method will receive the input from key on the keyboard and then will process the robot move, turnLeft, turnRight method
-// and if the key is 's' will save the file in position.txt and if key is 'l' will load the file.
-// 
-/////////////////////////////////////////////////////
+  //
+  // Programmer: Thanakrit-Bank
+  //
+  // Description: This method will receive the input from key on the keyboard and then will process the robot move, turnLeft, turnRight method
+  // and if the key is 's' will save the file in position.txt and if key is 'l' will load the file.
+  // 
+  /////////////////////////////////////////////////////
   void control() {
     switch(keyCode) {
       // when pressed arrow button
-    
-      case UP:
-        // when pressed arrow up
-        world.robot.move();
-        break;
-      
-      case LEFT:
-        // when pressed arrow left
-        world.robot.turnLeft();
-        break;
-      
-      case RIGHT:
-        // when pressed arrow right
-        world.robot.turnRight();
-        break;
+
+    case UP:
+      // when pressed arrow up
+      world.robot.move();
+      break;
+
+    case LEFT:
+      // when pressed arrow left
+      world.robot.turnLeft();
+      break;
+
+    case RIGHT:
+      // when pressed arrow right
+      world.robot.turnRight();
+      break;
     }
     if (key == 's') {
       world.saveFile("position.txt");
     }
     if (key == 'l') {  
-       world.robot= new Robot(info[1][0],info[1][1],info[3][0]);
-       world.target = new Target(info[2][0],info[2][1]);  
-    }  
+      world.robot= new Robot(info[1][0], info[1][1], info[3][0]);
+      world.target = new Target(info[2][0], info[2][1]);
+    }
   }
 }

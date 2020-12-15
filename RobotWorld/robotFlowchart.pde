@@ -106,7 +106,42 @@ class ArrayQueue
         false_statement += "+" + false_cmd[j];
       }
     }
-    
     queue.append("[" + if_condition + "," + true_statement + "," + false_statement + "]");
+  }
+  
+    
+  void enqueue(String if_condition, String[] true_cmd, String false_cmd)
+  {
+    String true_statement = "";
+    
+    for(int i=0; i<true_cmd.length; i++)
+    {
+      if(i == 0)
+      {
+        true_statement += true_cmd[i];
+      }
+      else
+      {
+        true_statement += "+" + true_cmd[i];
+      }
+    }
+    queue.append("[" + if_condition + "," + true_statement + "," + false_cmd + "]");
+  }
+  
+  void enqueue(String if_condition, String true_cmd, String[] false_cmd)
+  {
+    String  false_statement = "";
+    for(int j=0; j<false_cmd.length; j++)
+    {
+      if(j == 0)
+      {
+        false_statement += false_cmd[j];
+      }
+      else
+      {
+        false_statement += "+" + false_cmd[j];
+      }
+      queue.append("[" + if_condition + "," + true_cmd + "," + false_statement + "]");
+    }
   }
 }
