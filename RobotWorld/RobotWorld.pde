@@ -34,7 +34,7 @@ void setup() {
   flowchart.add("move()");
   flowchart.ifStatement("isBlocked()", "turnRight()", "move()");
   flowchart.add("move()");
-  flowchart.render();
+  //flowchart.render();
 
   int randX = (int)random(world.getMaxX()-1);
   int randY = (int)random(world.getMaxY()-1);
@@ -129,7 +129,7 @@ class World {
   Target target;
   InputProcessor inputProcessor;
   String[] Map;
-  Flowchart myFlow;
+  Flowchart myFlow = new Flowchart();
 
   void draw() {
     int X = width/maxX;
@@ -226,12 +226,9 @@ class World {
   /////////////////////////////////////////////////////
   void getFlow(Flowchart flow)
   {
-    myFlow = flow;
     if (frameCount > 50) {
-      //println("1");
-      //flow.render();
-      if (myFlow.elements != null)
-        {
+      if (myFlow.elements.getSize() != 0)
+      {
       for (int i=0; i < myFlow.getSize(); i++) {
         
           String command = myFlow.getFlowchart();
@@ -247,24 +244,34 @@ class World {
             // do if...else statement
             if (this.executeCommand(condition))
             {
+              println(ifTrue);
               this.executeCommand(ifTrue);
               
             } else
             {
+              println(ifFalse);
               this.executeCommand(ifFalse);
             }
           } else
           {
+            println(command);
             this.executeCommand(command);
           }
-        
-        
+        //println("1");
         this.draw();
         target.draw();
         robot.draw();
-        delay(800);
+        //delay(2000);
         }
-      }   
+      } 
+      else
+      {
+        //println("Start flowchart again.");
+        for (int i = 0; i < flow.getSize(); i++){
+          myFlow.add(flow.getCommand(i));
+        }
+        //myFlow.render();
+      }
     }
   }
 
@@ -460,11 +467,11 @@ class Robot {
   void move() {
     if (direction == 0 && !this.isAtTopEdge() && world.checkIsWhite(posX, posY-1) ) {
       posY -= 1;
-    } else if (direction ==1 && !this.isAtRightEdge(world.getMaxX()) && world.checkIsWhite(posX+1, posY) ) {
+    } else if (direction == 1 && !this.isAtRightEdge(world.getMaxX()) && world.checkIsWhite(posX+1, posY) ) {
       posX += 1;
-    } else if (direction ==2 && !this.isAtBottomEdge(world.getMaxY()) && world.checkIsWhite(posX, posY+1)) {
+    } else if (direction == 2 && !this.isAtBottomEdge(world.getMaxY()) && world.checkIsWhite(posX, posY+1)) {
       posY += 1;
-    } else if (direction ==3 && !this.isAtLeftEdge() && world.checkIsWhite(posX-1, posY) ) {
+    } else if (direction == 3 && !this.isAtLeftEdge() && world.checkIsWhite(posX-1, posY) ) {
       posX-= 1;
     }
   }

@@ -23,6 +23,10 @@ class Flowchart
     elements.enqueue(condition, true_cmd, false_cmd);
   }
   
+  String getCommand(int index){
+    return elements.getValue(index);
+  }
+  
   void render()
   {
     // show all elements in flowchart
