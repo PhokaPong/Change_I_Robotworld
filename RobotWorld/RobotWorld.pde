@@ -32,8 +32,8 @@ void setup() {
   //String[] falsecommand = {"turnRight()", "turnRight()"};
   // add statements in flowchart 
   flowchart.add("move()");
-  flowchart.ifStatement("isBlocked()", "turnRight()", "move()");
-  flowchart.add("move()");
+  flowchart.ifStatement("isBlocked()", "turnRight()", "move()"); 
+  
   //flowchart.render();
 
   int randX = (int)random(world.getMaxX()-1);
@@ -261,7 +261,7 @@ class World {
         this.draw();
         target.draw();
         robot.draw();
-        //delay(2000);
+        delay(500);
         }
       } 
       else
